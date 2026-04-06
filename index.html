@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agustek - Stock Online</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --primary: #00d4ff; --bg: #0d1117; --card: #161b22; }
+        body { font-family: sans-serif; background-color: var(--bg); color: white; margin: 0; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        .profile-header { text-align: center; margin: 30px 0; }
+        .profile-img { width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--primary); margin-bottom: 15px; }
+        .links-container { width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 15px; }
+        .btn-link { display: flex; align-items: center; justify-content: space-between; background: var(--card); color: white; text-decoration: none; padding: 18px 20px; border-radius: 15px; border: 1px solid #30363d; transition: 0.3s; }
+        .btn-link:active { transform: scale(0.98); border-color: var(--primary); }
+        .btn-link span { font-weight: 600; display: flex; align-items: center; gap: 12px; }
+        #loader { color: var(--primary); margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="profile-header">
+        <img src="https://unavatar.io/instagram/agustek.compraventa" alt="AgusTek" class="profile-img">
+        <h1>AGUSTEK</h1>
+        <p style="color: #8b949e;">Equipos Disponibles</p>
+    </div>
+    <div id="links-dinamicos" class="links-container">
+        <div id="loader">Cargando stock...</div>
+    </div>
+    <script>
+        const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTPVGrzxzbIlpALurP0Az-8P_uK0pHN0AjHoDoV8i1S7brEHheJeyVHoy4g5veIfRh35AfL-CrNWA1K/pub?output=csv';
+        async function cargarStock() {
+            try {
+                const response = await fetch(sheetUrl);
+                const data = await response.text();
+                const filas = data.split('\n').slice(1);
+                const container = document.getElementById('links-dinamicos');
+                container.innerHTML = '';
+                filas.forEach(fila => {
+                    const columnas = fila.split(',');
+                    if (columnas.length >= 2) {
+                        const nombre = columnas[0].trim();
+                        const link = columnas[1].trim();
+                        if(nombre && link) {
+                            container.innerHTML += `<a href="${link}" class="btn-link" target="_blank"><span><i class="fas fa-mobile-alt"></i> ${nombre}</span><i class="fas fa-chevron-right"></i></a>`;
+                        }
+                    }
+                });
+            } catch (e) { document.getElementById('links-dinamicos').innerHTML = "Error al cargar stock."; }
+        }
+        cargarStock();
+    </script>
+</body>
+</html>
+r
